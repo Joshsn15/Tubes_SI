@@ -17,10 +17,10 @@ if(isset($_POST['submit'])){
 }
 function updateMahasiswa($nim, $prodi)
 {
-    $sql = "UPDATE 'mahasiswa' SET  Nim = ? ,Prodi = ? WHERE Nim = ?";
+    $sql = "UPDATE mahasiswa SET Kd_Prodi = ? WHERE Nim = ?";
     global $conn;
     $stmt = mysqli_prepare($conn, $sql);
-    $stmt->bind_param("sss",$nim,$prodi, $nim);
+    $stmt->bind_param("sss",$prodi, $nim);
 
     if ($stmt->execute()) {
         $stmt->close();
