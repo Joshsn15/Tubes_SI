@@ -1,6 +1,6 @@
 <?php
 
-function crypto_encrypt(string $plainText, string $key): string
+function encryptFunc(string $plainText, string $key): string
 {
     $secretKey = hash('sha256', $key, true);
     $cipher = "AES-256-CBC";
@@ -18,7 +18,7 @@ function crypto_encrypt(string $plainText, string $key): string
     return base64_encode($iv . $encrypted);
 }
 
-function crypto_decrypt(string $encoded, string $key): string|false
+function decryptFunc(string $encoded, string $key): string|false
 {
     $secretKey = hash('sha256', $key, true);
     $cipher = "AES-256-CBC";
@@ -37,14 +37,3 @@ function crypto_decrypt(string $encoded, string $key): string|false
         $iv
     );
 }
-
-$key = "rahasia";
-$data = "joshsatrioganteng123";
-
-// Enkripsi
-$hasil = crypto_encrypt($data, $key);
-echo "Encrypted: $hasil\n";
-
-// Dekripsi
-$asli = crypto_decrypt($hasil, $key);
-echo "Decrypted: $asli\n";

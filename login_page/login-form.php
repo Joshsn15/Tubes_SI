@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Form SIA</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" >
 </head>
 <body>
     <div class="login-container">
@@ -26,7 +26,7 @@
                 <div class="form-group">
                     <div class="input-group neu-input">
                         <input type="text" id="user_id" name="user_id" placeholder=" ">
-                        <label for="email">NIM / NIK</label>
+                        <label for="user_id">NIM / NIK</label>
                         <div class="input-icon">
                         </div>
                     </div>
@@ -35,7 +35,7 @@
 
                 <div class="form-group">
                     <div class="input-group neu-input password-group">
-                        <input type="password" id="password" name="password" required autocomplete="current-password" placeholder=" ">
+                        <input type="password" id="password" name="password" required placeholder=" ">
                         <label for="password">Password</label>
                         <div class="input-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
