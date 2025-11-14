@@ -25,16 +25,20 @@ if (mysqli_connect_errno()) {
 
 function addNilai($nim, $Kd_Matkul, $nilai, $grade)
 {
-    $sql = "INSERT INTO 'nilai'(Nim,Kd,Matkul,Nilai,Grade) VALUES (?,?,?,?,?)";
-    global $conn;
-    $stmt = mysqli_prepare($conn, $sql);
-    $nilai_md5 = md5($nilai);
-    $grade_md5 = md5($grade);
-    $stmt->bind_param("ssss", $nim, $Kd_Matkul, $nilai_md5, $grade_md5);
-    if ($stmt->execute()) {
+    try {
+        $sql = "INSERT INTO nilai(Nim,Kd,Matkul,Nilai,Grade) VALUES (?,?,?,?,?)";
+        global $conn;
+        $stmt = mysqli_prepare($conn, $sql);
+        $nilai_md5 = md5($nilai);
+        $grade_md5 = md5($grade);
+        $stmt->bind_param("ssss", $nim, $Kd_Matkul, $nilai_md5, $grade_md5);
+        if ($stmt->execute()) {
+            $stmt->close();
+            return true;
+        }
+    } catch (Exception $e) {
+        echo $e;
         $stmt->close();
-        return true;
+        return false;
     }
-    $stmt->close();
-    return false;
 }
