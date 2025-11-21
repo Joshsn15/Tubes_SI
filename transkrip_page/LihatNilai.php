@@ -21,7 +21,7 @@
     include '../Database/checkRole.php';
 
     // $id = '7eac0a6a-7157-4474-92cf-0f28bbf0a444';
-    // $id = $_COOKIE['userID'];
+    $id = $_COOKIE['userID'];
 
     // if (!isset($_COOKIE['user_role']) || $_COOKIE['user_role'] != 'mahasiswa') {
     //     header('Location: login/login-form.php');
@@ -46,8 +46,7 @@
         echo "<td>" . $row['sks'] . "</td>";
         echo "<td>" . $nilai . "</td>";
         echo "<td>" . $grade . "</td>";
-        // echo "<td><a href='InsertNilai.php?userID=" . $id . "'>Insert </a></td>";
-        echo "<td><a href='UpdateNilai.php?Kd_Matkul=" . $row['Kd_Matkul'] . "'>Update Nilai</a></td></tr>";
+        echo "<td><a href='../nilai_page/nilaiIndex.php?userID=" . $id . "'>Update Nilai</a></td></tr>";
     }
     echo "</table>";
     ?>

@@ -3,8 +3,6 @@ include '../Database/connection.php';
 include '../Database/encrypt-decrypt.php';
 include '../Database/config.php';
 
-// --- 1. AMBIL INPUT (Pakai IF biasa, bukan ternary) ---
-
 $nameKeyword = "";
 if (isset($_GET['name'])) {
     $nameKeyword = $_GET['name'];
@@ -48,14 +46,12 @@ while ($row = mysqli_fetch_array($result)) {
         $bolehTampil = true;
     }
 
-
     if ($bolehTampil == true) {
         echo "<tr>";
         echo "<td>" . $row['NIM'] . "</td>";
         echo "<td>" . $namaAsli . "</td>";
         echo "<td>
-                <a href='LihatNilai.php?userID=" . $row['userID'] . "'>Lihat Nilai</a> | 
-              </td>";
+                <a href='LihatNilai.php?userID=" . $row['userID'] . "'>Lihat Nilai</a></td>";
         echo "</tr>";
     }
 }

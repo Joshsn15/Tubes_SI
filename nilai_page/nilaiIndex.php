@@ -67,7 +67,7 @@
 
     <?php
     // $_COOKIE['userID'] = "afdb1209-1e52-48f9-aa55-cbe419d42c1a"; // (Untuk tes) mahasiswa
-    $_COOKIE['userID'] = "2391ba08-0376-4795-98c2-6c3b2ede5d63"; // (Untuk tes) admin
+    // $_COOKIE['userID'] = "2391ba08-0376-4795-98c2-6c3b2ede5d63"; // (Untuk tes) admin
 
     global $conn;
     if (checkRoleByCookie()) {
