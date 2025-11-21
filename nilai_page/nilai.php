@@ -4,7 +4,6 @@ include '../Database/checkRole.php';
 include '../Database/encrypt-decrypt.php';
 include '../Database/config.php';
 
-$_COOKIE['userID'] = "b2fa8c1d-9a4b-4f4d-a2e2-8efc35e7f11a";
 
 if (isset($_POST['submitInsertNilai'])) {
     $nim = $_POST['nim'];
