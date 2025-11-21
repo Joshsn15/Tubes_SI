@@ -1,0 +1,78 @@
+START TRANSACTION;
+
+-- ===========================
+-- TABLE: users
+-- ===========================
+INSERT INTO `users` 
+(`userID`, `nama`, `password`, `alamat`, `user_role`) VALUES
+-- Admin
+('b2fa8c1d-9a4b-4f4d-a2e2-8efc35e7f11a', 'Admin Sistem', '$2y$10$8K9q2RoN9zjSGnHjFdfJ7.0nyvDoP7fXu7dV9rcdOZIZy9z1FMvCy', 'Kampus Pusat', 'Admin'),
+
+-- Mahasiswa 1
+('7eac0a6a-7157-4474-92cf-0f28bbf0a444', 'Rizky Pratama', '$2y$10$8K9q2RoN9zjSGnHjFdfJ7.0nyvDoP7fXu7dV9rcdOZIZy9z1FMvCy', 'Bandung', 'Mahasiswa'),
+
+-- Mahasiswa 2
+('3c71fd52-65be-4e9c-9fb1-b00d176e7ef3', 'Dewi Lestari', '$2y$10$8K9q2RoN9zjSGnHjFdfJ7.0nyvDoP7fXu7dV9rcdOZIZy9z1FMvCy', 'Jakarta', 'Mahasiswa'),
+
+-- Mahasiswa 3
+('afdb1209-1e52-48f9-aa55-cbe419d42c1a', 'Budi Santoso', '$2y$10$8K9q2RoN9zjSGnHjFdfJ7.0nyvDoP7fXu7dV9rcdOZIZy9z1FMvCy', 'Surabaya', 'Mahasiswa');
+
+
+
+-- ===========================
+-- TABLE: admin
+-- ===========================
+INSERT INTO `admin` (`NIK`, `userID`) VALUES
+('1987001', 'b2fa8c1d-9a4b-4f4d-a2e2-8efc35e7f11a');
+
+
+
+-- ===========================
+-- TABLE: prodi
+-- (IF sudah ada pada DB, hanya menambah 2 prodi lain)
+-- ===========================
+INSERT INTO `prodi` 
+(`Kd_Prodi`, `Nama_Prodi`, `Fakultas`, `Nama_KetuaProdi`) VALUES
+('SI', 'Sistem Informasi', 'Teknik', 'Dr. Andika Prasetyo'),
+('TI', 'Teknik Industri', 'Teknik', 'Ir. Sari Wulandari');
+
+
+
+-- ===========================
+-- TABLE: mahasiswa
+-- ===========================
+INSERT INTO `mahasiswa` (`NIM`, `Prodi`, `userID`) VALUES
+('1123001', 'IF', '7eac0a6a-7157-4474-92cf-0f28bbf0a444'),
+('1123002', 'SI', '3c71fd52-65be-4e9c-9fb1-b00d176e7ef3'),
+('1123003', 'TI', 'afdb1209-1e52-48f9-aa55-cbe419d42c1a');
+
+
+
+-- ===========================
+-- TABLE: matkul
+-- ===========================
+INSERT INTO `matkul` (`Kd_Matkul`, `Nama_Matkul`, `sks`) VALUES
+('IF101', 'Algoritma dan Pemrograman', 3),
+('IF102', 'Basis Data', 3),
+('SI101', 'Analisis Sistem Informasi', 3),
+('UM101', 'Pendidikan Pancasila', 2);
+
+
+
+-- ===========================
+-- TABLE: nilai
+-- ===========================
+INSERT INTO `nilai` (`NIM`, `Kd_Matkul`, `Nilai`, `Grade`) VALUES
+-- Rizky (IF)
+('1123001', 'IF101', '85', 'A'),
+('1123001', 'IF102', '78', 'B'),
+('1123001', 'UM101', '90', 'A'),
+
+-- Dewi (SI)
+('1123002', 'SI101', '88', 'A'),
+('1123002', 'UM101', '75', 'B'),
+
+-- Budi (TI)
+('1123003', 'UM101', '82', 'A');
+
+COMMIT;

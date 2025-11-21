@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form SIA</title>
+    <link rel="stylesheet" href="style.css" >
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="neu-icon">
+                    <div class="icon-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                </div>
+                <h2>Login Form</h2>
+                <p>SIA Institut Teknologi Harapan Bangsa</p>
+            </div>
+            
+            <form action="login.php" class="login-form" id="loginForm" method="POST">
+                <div class="form-group">
+                    <div class="input-group neu-input">
+                        <input type="text" id="user_id" name="user_id" placeholder=" ">
+                        <label for="user_id">NIM / NIK</label>
+                        <div class="input-icon">
+                        </div>
+                    </div>
+                    <span class="error-message" id="emailError"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group neu-input password-group">
+                        <input type="password" id="password" name="password" required placeholder=" ">
+                        <label for="password">Password</label>
+                        <div class="input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0110 0v4"/>
+                            </svg>
+                        </div>
+                        <button type="button" class="password-toggle neu-toggle" id="passwordToggle" aria-label="Toggle password visibility">
+                            <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <span class="error-message" id="passwordError"></span>
+                </div>
+
+                <div class="form-options">
+                    <a href="#" class="forgot-link">Forgot password?</a>
+                </div>
+
+                <input type="submit" class="neu-button login-btn" value="Sign in">
+                    <div class="btn-loader">
+                        <div class="neu-spinner"></div>
+                    </div>
+            </form>
+
+            <div class="signup-link">
+                <p>Akun ITHB belum terdaftar? <a href="#">Daftar akun</a></p>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                <div class="success-icon neu-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <h3>Success!</h3>
+                <p>Redirecting to your dashboard...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById("password");
+        const toggleBtn = document.getElementById("passwordToggle");
+
+        const eyeOpen = toggleBtn.querySelector(".eye-open");
+        const eyeClosed = toggleBtn.querySelector(".eye-closed");
+
+        toggleBtn.addEventListener("click", () => {
+            const isHidden = passwordInput.type === "password";
+
+            passwordInput.type = isHidden ? "text" : "password";
+
+            // Toggle icon
+            eyeOpen.style.display = isHidden ? "none" : "block";
+            eyeClosed.style.display = isHidden ? "block" : "none";
+        });
+</script>
+</body>
+</html>
