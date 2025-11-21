@@ -7,27 +7,13 @@
 
 <body>
     <h1>TRANSKRIP NILAI </h1>
-    <div id="search">
-        <input type="text" name="name" placeholder="Name" id="searchName">
-        <input type="text" name="nim" placeholder="NIM" id="searchNIM">
-        <button onclick="searchData()">Search</button>
-        <button onclick="searchData('reset')">Reset</button>
-    </div>
-
     <?php
     include '../Database/connection.php';
     include '../Database/encrypt-decrypt.php';
     include '../Database/config.php';
     include '../Database/checkRole.php';
 
-    // $id = '7eac0a6a-7157-4474-92cf-0f28bbf0a444';
-    $id = $_COOKIE['userID'];
-
-    // if (!isset($_COOKIE['user_role']) || $_COOKIE['user_role'] != 'mahasiswa') {
-    //     header('Location: login/login-form.php');
-    //     exit;
-    // }
-    // $mahasiswa_id = $_COOKIE['userID'];
+    // $id = $_COOKIE['userID'];
     $id = $_GET['userID'];
     
     $sql = "SELECT mk.Kd_Matkul, mk.Nama_Matkul, mk.sks, n.Nilai, n.Grade FROM nilai n JOIN matkul mk ON n.Kd_Matkul = mk.Kd_Matkul JOIN mahasiswa m ON n.NIM = m.NIM WHERE m.userID = ?";

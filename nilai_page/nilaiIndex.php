@@ -66,91 +66,107 @@
     ?>
 
     <?php
-    // $_COOKIE['userID'] = "afdb1209-1e52-48f9-aa55-cbe419d42c1a"; // (Untuk tes) mahasiswa
-    // $_COOKIE['userID'] = "2391ba08-0376-4795-98c2-6c3b2ede5d63"; // (Untuk tes) admin
 
     global $conn;
-    if (checkRoleByCookie()) {
-        $admin = true;
-    } else {
-        $admin = false;
-    }
-    echo "Admin: " . ($admin ? "true" : "false") . "<br>";
-
-    $sqlCheckNim = "SELECT m.nim FROM mahasiswa m 
-                    INNER JOIN users u ON u.userID = m.userID 
-                    WHERE u.userID = ? AND m.deletedAt IS NULL ";
-
-    $stmtNim = mysqli_prepare($conn, $sqlCheckNim);
-    $stmtNim->bind_param("s", $_COOKIE['userID']);
-    $stmtNim->execute();
-    $resultNim = $stmtNim->get_result();
-    $mahasiswa = $resultNim->fetch_assoc();
-
-    if (!$mahasiswa) {
-        echo "Tidak ada data mahasiswa.";
-        exit;
-    }
-
-    $nim = $mahasiswa['nim'];
-    echo $nim;
-    $sqlNilai = "SELECT * FROM nilai WHERE NIM = ? AND deletedAt IS NULL"; // untuk mahasiswa
-    if ($admin) {
-        $sqlAdmin = "SELECT * FROM nilai WHERE deletedAt IS NULL"; // untuk admin
-    } else {
-        $sqlAdmin = $sqlNilai;
-    }
-
-    $stmtNilai = mysqli_prepare($conn, $sqlAdmin);
-    if ($admin) {
-        $stmtNilai->execute();
-    } else {
-        $stmtNilai->bind_param("s", $nim);
-        $stmtNilai->execute();
-    }
-    $result = $stmtNilai->get_result();
-    
-    echo "<table border='1'>";
-    echo "<tr>";
-    if ($admin) {
-        echo "<th>NIM</th><th>Kode Matkul</th><th>Nilai</th><th>Grade</th><th>Created At</th><th>Deleted At</th><th>Updated At</th><th>Actions</th>";
-    } else {
-        echo "<th>Kode Matkul</th><th>Nilai</th><th>Grade</th>";
-    }
-    echo "</tr>";
     global $keyDecrypt;
 
+    $admin = checkRoleByCookie();
+    echo "Admin: " . ($admin ? "true" : "false") . "<br>";
+
+
+    if ($admin) {
+        $sql = "SELECT * FROM nilai WHERE deletedAt IS NULL";
+        $stmt = mysqli_prepare($conn, $sql);
+        $stmt->execute();
+    } else {
+
+        $sqlCheckNim = "SELECT m.nim FROM mahasiswa m 
+                        INNER JOIN users u ON u.userID = m.userID 
+                        WHERE u.userID = ? AND m.deletedAt IS NULL";
+
+        $stmtNim = mysqli_prepare($conn, $sqlCheckNim);
+        $stmtNim->bind_param("s", $_COOKIE['userID']);
+        $stmtNim->execute();
+        $resultNim = $stmtNim->get_result();
+        $mahasiswa = $resultNim->fetch_assoc();
+
+        if (!$mahasiswa) {
+            echo "Tidak ada data mahasiswa.";
+            exit;
+        }
+
+        $nim = $mahasiswa['nim'];
+        echo "NIM: " . htmlspecialchars($nim) . "<br>";
+
+        $sql = "SELECT * FROM nilai WHERE NIM = ? AND deletedAt IS NULL";
+        $stmt = mysqli_prepare($conn, $sql);
+        $stmt->bind_param("s", $nim);
+        $stmt->execute();
+    }
+
+    $result = $stmt->get_result();
+
+
+
+    echo "<table border='1'>";
+    echo "<tr>";
+
+    if ($admin) {
+        echo "<th>NIM</th>";
+        echo "<th>Kode Matkul</th>";
+        echo "<th>Nilai</th>";
+        echo "<th>Grade</th>";
+        echo "<th>Created At</th>";
+        echo "<th>Deleted At</th>";
+        echo "<th>Updated At</th>";
+        echo "<th>Actions</th>";
+    } else {
+        echo "<th>Kode Matkul</th>";
+        echo "<th>Nilai</th>";
+        echo "<th>Grade</th>";
+    }
+
+    echo "</tr>";
+
+
     while ($row = $result->fetch_assoc()) {
-        if($row['Grade'] == null || $row['Nilai'] == null){  
+        if ($row['Grade'] == null || $row['Nilai'] == null) {
             continue;
         }
-        
-        $decrpytNilai = decryptfunc($row['Nilai'], $keyDecrypt);
-        $decrpytGrade = decryptfunc($row['Grade'], $keyDecrypt);
-        
+
+        $decryptedNilai = decryptfunc($row['Nilai'], $keyDecrypt);
+        $decryptedGrade = decryptfunc($row['Grade'], $keyDecrypt);
         echo "<tr>";
+
         if ($admin) {
-            echo "<td>" . $row['NIM'] . "</td>";
-            echo "<td>" . $row['Kd_Matkul'] . "</td>";
-            echo "<td>" . $decrpytNilai . "</td>";
-            echo "<td>" . $decrpytGrade . "</td>";
-            echo "<td>" . $row['createdAt'] . "</td>";
-            echo "<td>" . $row['deletedAt'] . "</td>";
-            echo "<td>" . $row['updatedAt'] . "</td>";
+            echo "<td>" . htmlspecialchars($row['NIM']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['Kd_Matkul']) . "</td>";
+            echo "<td>" . htmlspecialchars($decryptedNilai) . "</td>";
+            echo "<td>" . htmlspecialchars($decryptedGrade) . "</td>";
+            echo "<td>" . htmlspecialchars($row['createdAt']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['deletedAt']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['updatedAt']) . "</td>";
             echo "<td>";
-            echo "<button onclick=\"updateNilai('" . $row['NIM'] . "', '" . $row['Kd_Matkul'] . "', '" . $decrpytNilai . "', '" . $decrpytGrade . "')\">Update</button> ";
-            echo "<button onclick='deleteNilai(\"" . $row['NIM'] . "\", \"" . $row['Kd_Matkul'] . "\")'>Delete</button>";
+            echo "<button onclick='updateNilai(\"" . htmlspecialchars($row['NIM'], ENT_QUOTES) . "\", \"" . htmlspecialchars($row['Kd_Matkul'], ENT_QUOTES) . "\", \"" . htmlspecialchars($decryptedNilai, ENT_QUOTES) . "\")'>Update</button> ";
+            echo "<button onclick='deleteNilai(\"" . htmlspecialchars($row['NIM'], ENT_QUOTES) . "\", \"" . htmlspecialchars($row['Kd_Matkul'], ENT_QUOTES) . "\")'>Delete</button>";
             echo "</td>";
         } else {
-            echo "<td>" . $row['Kd_Matkul'] . "</td>";
-            echo "<td>" . $decrpytNilai . "</td>";
-            echo "<td>" . $decrpytGrade . "</td>";
+            echo "<td>" . htmlspecialchars($row['Kd_Matkul']) . "</td>";
+            echo "<td>" . htmlspecialchars($decryptedNilai) . "</td>";
+            echo "<td>" . htmlspecialchars($decryptedGrade) . "</td>";
         }
+
         echo "</tr>";
     }
+
     echo "</table>";
+
+
+
     echo "<br>";
-    echo $admin ? "<button onclick='insertNilai()'>Insert Nilai</button>" : "";
+    if ($admin) {
+        echo "<button onclick='insertNilai()'>Insert Nilai</button>";
+    }
 
     echo "<div id='formContainer'></div>";
     ?>
@@ -172,7 +188,7 @@
         document.getElementById("formContainer").innerHTML = form;
     }
 
-    function updateNilai(nim, kd_matkul, nilai, grade) {
+    function updateNilai(nim, kd_matkul, nilai) {
         var form = "<form method='post' action='nilai.php'>";
         form += "<h3>Update Nilai</h3>";
         form += "<input type='hidden' name='nim' value='" + nim + "'>";
@@ -181,8 +197,6 @@
         form += "<label>Kode Matkul: " + kd_matkul + "</label><br>";
         form += "<label for='nilai'>Nilai</label>";
         form += "<input type='number' step='0.01' name='nilai' id='nilai' value='" + nilai + "' required>";
-        form += "<label for='grade'>Grade</label>";
-        form += "<input type='text' name='grade' id='grade' value='" + grade + "' required>";
         form += "<button type='submit' name='submitUpdateNilai'>Update Nilai</button>";
         form += "<button type='button' onclick='clearForm()'>Cancel</button>";
         form += "</form>";
@@ -223,3 +237,5 @@
         document.getElementById("formContainer").innerHTML = "";
     }
 </script>
+
+</html>

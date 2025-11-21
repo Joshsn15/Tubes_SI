@@ -46,9 +46,6 @@
     include '../Database/encrypt-decrypt.php';
     include '../Database/config.php';
 
-    // $id = "b2fa8c1d-9a4b-4f4d-a2e2-8efc35e7f11a";
-    // $id = $_COOKIE['userID'];
-
     $sql = "SELECT m.NIM, u.nama, u.userID FROM mahasiswa m JOIN users u ON m.userID = u.userID ORDER BY m.nim ASC";
     $stmt = mysqli_prepare($conn, $sql);
     // mysqli_stmt_bind_param($stmt, "s", $id);
