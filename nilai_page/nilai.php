@@ -3,8 +3,8 @@ include '../Database/connection.php';
 include '../Database/checkRole.php';
 include '../Database/encrypt-decrypt.php';
 include '../Database/config.php';
-// $_COOKIE['userID'] = "3c71fd52-65be-4e9c-9fb1-b00d176e7ef3";
-$_COOKIE['userID'] = "2391ba08-0376-4795-98c2-6c3b2ede5d63";
+
+$_COOKIE['userID'] = "b2fa8c1d-9a4b-4f4d-a2e2-8efc35e7f11a";
 
 if (isset($_POST['submitInsertNilai'])) {
     $nim = $_POST['nim'];
@@ -54,31 +54,41 @@ function insertNilai($nim, $kd_matkul, $nilai)
 
 
 
-function updateNilai($nim, $kd_matkul, $nilai, $grade)
+function updateNilai($nim, $kd_matkul, $nilai,$grade)
 {
-    echo $nilai;
-    echo $grade;
     if (checkRoleByCookie()) {
-        $sql = "UPDATE nilai SET nilai = ?, grade = ?, updatedAt = now() WHERE nim = ? AND kd_matkul = ? AND deletedAt IS NULL";
+
+        $sql = "UPDATE nilai SET  nilai = ? , grade = ?, updatedAt = now()  WHERE nim = ? AND kd_matkul = ? AND deletedAt IS NULL";
+
         global $conn;
-        $stmt = mysqli_prepare($conn, $sql);
         global $keyDecrypt;
+        $stmt = mysqli_prepare($conn, $sql);
         $newNilai = encryptFunc($keyDecrypt, $nilai);
-        $newGrade = encryptFunc($keyDecrypt, $grade);
+        $newGrade = hitungGrade($nilai);
         $stmt->bind_param("ssss", $newNilai, $newGrade, $nim, $kd_matkul);
         $result = $stmt->execute();
         $stmt->close();
-        echo $newGrade;
-        echo $newNilai;
         if ($result) {
             header('Location: nilaiIndex.php');
             exit;
-        } else {
-            return false;
         }
     }
 }
-
+function hitungGrade($nilai)
+    {
+        $nilai = (int) $nilai;
+        if ($nilai >= 80) {
+            return 'A';
+        } else if ($nilai >= 70) {
+            return 'B';
+        } else if ($nilai >= 60) {
+            return 'C';
+        } else if ($nilai >= 50) {
+            return 'D';
+        } else {
+            return 'E';
+        }
+    }
 function deleteNilai($nim, $kd_matkul)
 {
     if (checkRoleByCookie()) {
