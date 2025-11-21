@@ -21,7 +21,7 @@
                 <h2>Login Form</h2>
                 <p>SIA Institut Teknologi Harapan Bangsa</p>
             </div>
-            
+
             <form action="login.php" class="login-form" id="loginForm" method="POST">
                 <div class="form-group">
                     <div class="input-group neu-input">
@@ -57,10 +57,6 @@
                     <span class="error-message" id="passwordError"></span>
                 </div>
 
-                <div class="form-options">
-                    <a href="#" class="forgot-link">Forgot password?</a>
-                </div>
-
                 <input type="submit" class="neu-button login-btn" value="Sign in">
                     <div class="btn-loader">
                         <div class="neu-spinner"></div>
@@ -68,7 +64,7 @@
             </form>
 
             <div class="signup-link">
-                <p>Akun ITHB belum terdaftar? <a href="#">Daftar akun</a></p>
+                <p>Akun ITHB belum terdaftar? <a href="../sign_up/signUpForm.php">Daftar akun</a></p>
             </div>
 
             <div class="success-message" id="successMessage">
