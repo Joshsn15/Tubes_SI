@@ -1,3 +1,4 @@
 <?php
-    setcookie('userID', $row['userID'], time() - (86400 * 30), '/');
+    setcookie('userID', "", time() - (86400 * 30), '/');
+    header("Location: ../login_page/login-form.php");
 ?>

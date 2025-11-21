@@ -1,3 +1,5 @@
+
+<!-- USER ROLE DEFAULT NULLL -->
 <?php
 include '../Database/connection.php';
 include '../Database/uuidGenerator.php';
@@ -15,8 +17,8 @@ if (isset($_POST['nama']) && isset($_POST['password']) && isset($_POST['alamat']
         echo "Data tidak boleh kosong.";
     } else {
         if (addUser($nama, $password, $alamat)) {
-            // header('Location:../Login_page/login-Form.php');
-            echo "Data berhasil disimpan.";
+            header('Location:../Login_page/login-Form.php');
+            // echo "Data berhasil disimpan.";
         } else {
             echo "Data gagal disimpan.";
         }
