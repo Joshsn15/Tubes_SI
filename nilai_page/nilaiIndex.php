@@ -66,91 +66,129 @@
     ?>
 
     <?php
+    // ============================================
+    // STEP 1: Setup & Check User Role
+    // ============================================
     // $_COOKIE['userID'] = "afdb1209-1e52-48f9-aa55-cbe419d42c1a"; // (Untuk tes) mahasiswa
     $_COOKIE['userID'] = "b2fa8c1d-9a4b-4f4d-a2e2-8efc35e7f11a"; // (Untuk tes) admin
 
     global $conn;
-    if (checkRoleByCookie()) {
-        $admin = true;
-    } else {
-        $admin = false;
-    }
+    global $keyDecrypt;
+    
+    $admin = checkRoleByCookie();
     echo "Admin: " . ($admin ? "true" : "false") . "<br>";
 
-    $sqlCheckNim = "SELECT m.nim FROM mahasiswa m 
-                    INNER JOIN users u ON u.userID = m.userID 
-                    WHERE u.userID = ? AND m.deletedAt IS NULL ";
-
-    $stmtNim = mysqli_prepare($conn, $sqlCheckNim);
-    $stmtNim->bind_param("s", $_COOKIE['userID']);
-    $stmtNim->execute();
-    $resultNim = $stmtNim->get_result();
-    $mahasiswa = $resultNim->fetch_assoc();
-
-    if (!$mahasiswa) {
-        echo "Tidak ada data mahasiswa.";
-        exit;
-    }
-
-    $nim = $mahasiswa['nim'];
-    echo $nim;
-    $sqlNilai = "SELECT * FROM nilai WHERE NIM = ? AND deletedAt IS NULL"; // untuk mahasiswa
+    // ============================================
+    // STEP 2: Fetch Data Based on Role
+    // ============================================
     if ($admin) {
-        $sqlAdmin = "SELECT * FROM nilai WHERE deletedAt IS NULL"; // untuk admin
+        // Admin sees ALL nilai records
+        $sql = "SELECT * FROM nilai WHERE deletedAt IS NULL";
+        $stmt = mysqli_prepare($conn, $sql);
+        $stmt->execute();
+        
     } else {
-        $sqlAdmin = $sqlNilai;
+        // Mahasiswa sees ONLY their own nilai records
+        // First, get the student's NIM
+        $sqlCheckNim = "SELECT m.nim FROM mahasiswa m 
+                        INNER JOIN users u ON u.userID = m.userID 
+                        WHERE u.userID = ? AND m.deletedAt IS NULL";
+        
+        $stmtNim = mysqli_prepare($conn, $sqlCheckNim);
+        $stmtNim->bind_param("s", $_COOKIE['userID']);
+        $stmtNim->execute();
+        $resultNim = $stmtNim->get_result();
+        $mahasiswa = $resultNim->fetch_assoc();
+
+        if (!$mahasiswa) {
+            echo "Tidak ada data mahasiswa.";
+            exit;
+        }
+
+        $nim = $mahasiswa['nim'];
+        echo "NIM: " . htmlspecialchars($nim) . "<br>";
+        
+        // Then, get only this student's nilai records
+        $sql = "SELECT * FROM nilai WHERE NIM = ? AND deletedAt IS NULL";
+        $stmt = mysqli_prepare($conn, $sql);
+        $stmt->bind_param("s", $nim);
+        $stmt->execute();
     }
 
-    $stmtNilai = mysqli_prepare($conn, $sqlAdmin);
-    if ($admin) {
-        $stmtNilai->execute();
-    } else {
-        $stmtNilai->bind_param("s", $nim);
-        $stmtNilai->execute();
-    }
-    $result = $stmtNilai->get_result();
-    
+    $result = $stmt->get_result();
+
+    // ============================================
+    // STEP 3: Display Table
+    // ============================================
     echo "<table border='1'>";
     echo "<tr>";
+    
+    // Table headers based on role
     if ($admin) {
-        echo "<th>NIM</th><th>Kode Matkul</th><th>Nilai</th><th>Grade</th><th>Created At</th><th>Deleted At</th><th>Updated At</th><th>Actions</th>";
+        echo "<th>NIM</th>";
+        echo "<th>Kode Matkul</th>";
+        echo "<th>Nilai</th>";
+        echo "<th>Grade</th>";
+        echo "<th>Created At</th>";
+        echo "<th>Deleted At</th>";
+        echo "<th>Updated At</th>";
+        echo "<th>Actions</th>";
     } else {
-        echo "<th>Kode Matkul</th><th>Nilai</th><th>Grade</th>";
+        echo "<th>Kode Matkul</th>";
+        echo "<th>Nilai</th>";
+        echo "<th>Grade</th>";
     }
+    
     echo "</tr>";
-    global $keyDecrypt;
 
+    // ============================================
+    // STEP 4: Display Table Rows
+    // ============================================
     while ($row = $result->fetch_assoc()) {
-        if($row['Grade'] == null || $row['Nilai'] == null){  
+        // Skip records with NULL values
+        if ($row['Grade'] == null || $row['Nilai'] == null) {
             continue;
         }
-        
-        $decrpytNilai = decryptfunc($row['Nilai'], $keyDecrypt);
-        $decrpytGrade = decryptfunc($row['Grade'], $keyDecrypt);
-        
+
+        // Decrypt values
+        $decryptedNilai = decryptfunc($row['Nilai'], $keyDecrypt);
+        $decryptedGrade = decryptfunc($row['Grade'], $keyDecrypt);
+
         echo "<tr>";
+        
         if ($admin) {
-            echo "<td>" . $row['NIM'] . "</td>";
-            echo "<td>" . $row['Kd_Matkul'] . "</td>";
-            echo "<td>" . $decrpytNilai . "</td>";
-            echo "<td>" . $decrpytGrade . "</td>";
-            echo "<td>" . $row['createdAt'] . "</td>";
-            echo "<td>" . $row['deletedAt'] . "</td>";
-            echo "<td>" . $row['updatedAt'] . "</td>";
+            // Admin view: Full details + action buttons
+            echo "<td>" . htmlspecialchars($row['NIM']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['Kd_Matkul']) . "</td>";
+            echo "<td>" . htmlspecialchars($decryptedNilai) . "</td>";
+            echo "<td>" . htmlspecialchars($decryptedGrade) . "</td>";
+            echo "<td>" . htmlspecialchars($row['createdAt']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['deletedAt']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['updatedAt']) . "</td>";
             echo "<td>";
-            echo "<button onclick=\"updateNilai('" . $row['NIM'] . "', '" . $row['Kd_Matkul'] . "', '" . $decrpytNilai . "', '" . $decrpytGrade . "')\">Update</button> ";
-            echo "<button onclick='deleteNilai(\"" . $row['NIM'] . "\", \"" . $row['Kd_Matkul'] . "\")'>Delete</button>";
+            echo "<button onclick='updateNilai(\"" . htmlspecialchars($row['NIM'], ENT_QUOTES) . "\", \"" . htmlspecialchars($row['Kd_Matkul'], ENT_QUOTES) . "\", \"" . htmlspecialchars($decryptedNilai, ENT_QUOTES) . "\", \"" . htmlspecialchars($decryptedGrade, ENT_QUOTES) . "\")'>Update</button> ";
+            echo "<button onclick='deleteNilai(\"" . htmlspecialchars($row['NIM'], ENT_QUOTES) . "\", \"" . htmlspecialchars($row['Kd_Matkul'], ENT_QUOTES) . "\")'>Delete</button>";
             echo "</td>";
+            
         } else {
-            echo "<td>" . $row['Kd_Matkul'] . "</td>";
-            echo "<td>" . $decrpytNilai . "</td>";
-            echo "<td>" . $decrpytGrade . "</td>";
+            // Mahasiswa view: Basic info only
+            echo "<td>" . htmlspecialchars($row['Kd_Matkul']) . "</td>";
+            echo "<td>" . htmlspecialchars($decryptedNilai) . "</td>";
+            echo "<td>" . htmlspecialchars($decryptedGrade) . "</td>";
         }
+        
         echo "</tr>";
     }
+    
     echo "</table>";
+
+    // ============================================
+    // STEP 5: Insert Button (Admin Only)
+    // ============================================
     echo "<br>";
-    echo $admin ? "<button onclick='insertNilai()'>Insert Nilai</button>" : "";
+    if ($admin) {
+        echo "<button onclick='insertNilai()'>Insert Nilai</button>";
+    }
 
     echo "<div id='formContainer'></div>";
     ?>
@@ -223,3 +261,5 @@
         document.getElementById("formContainer").innerHTML = "";
     }
 </script>
+
+</html>

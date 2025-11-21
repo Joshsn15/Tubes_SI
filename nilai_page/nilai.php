@@ -54,7 +54,7 @@ function insertNilai($nim, $kd_matkul, $nilai)
 
 
 
-function updateNilai($nim, $kd_matkul, $nilai,$grade)
+function updateNilai($nim, $kd_matkul, $nilai)
 {
     if (checkRoleByCookie()) {
 
